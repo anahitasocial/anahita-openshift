@@ -1,0 +1,3 @@
+[submodule "anahita"]
+	path = anahita
+	url = git://github.com/anahitasocial/anahita.git
