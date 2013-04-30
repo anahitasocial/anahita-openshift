@@ -23,7 +23,7 @@ if ( true || !file_exists($root.'/configuration.php') )
 {
 	pl();	
 	pl("copying files....");
-	exec("cp -rf $anahita/code/vendors/joomla/* $root");
+	@exec("cp -rf $anahita/code/vendors/joomla/* $root");
 	pl("symlinking files....");	
 	exec("php $anahita/scripts/symlink.php $root"); 
 	error_reporting(E_ALL);
@@ -77,6 +77,8 @@ if ( true || !file_exists($root.'/configuration.php') )
 	array_walk($sql_files, function($file) use($db) {
 		JInstallationHelper::populateDatabase(&$db, $file, $errors);
 	});
+	while(!($admin_email = readline('Enter your email : ')));
+	while(!($admin_pass  = readline('Enter a password : ')));	
 	date_default_timezone_set('GMT');
 	$vars = array(
 		'DBhostname' => $host,
@@ -84,11 +86,16 @@ if ( true || !file_exists($root.'/configuration.php') )
 		'DBpassword' => $password,
 		'DBname' 	 => $database,
 		'DBPrefix'   => $prefix,
-		'adminEmail' => 'ash@peerglobe.com',
-		'adminPassword' => 'v3j7n1' 
+		'adminEmail' => $admin_email,
+		'adminPassword' => $admin_pass 
 	);
-	JInstallationHelper::createAdminUser($vars);
-
+	if ( !JInstallationHelper::createAdminUser($vars) ) 
+	{
+		pl("****************************************************");	
+		pl("Counldn't create an admin user. Make sure you have entered a correct email");
+		pl("****************************************************");	
+		exit(1);	
+	}
 	write_config(array(
 		'db_host'       => $host,
 		'db_username'   => $user,
@@ -98,6 +105,12 @@ if ( true || !file_exists($root.'/configuration.php') )
 		'secret'		=> JUserHelper::genRandomPassword(32)
 	));
 	exec("rm -rf $root/installation");
+	pl("****************************************");
+	pl("Congradulation you're done. Try logging with the following credentials");
+	pl(array(
+		'username' => 'admin',
+		'password' => $admin_pass
+	));
 } else 
 {
 
