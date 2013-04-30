@@ -8,10 +8,23 @@
 
 $_GET['root']    = $root    = getenv('OPENSHIFT_REPO_DIR').'/php';
 $_GET['anahita'] = $anahita = getenv('OPENSHIFT_REPO_DIR').'/anahita';
-
+function pl($text="")
+{
+	if ( is_array($text) ) 
+	{
+		foreach($text as $key => $value) {
+			$text[$key] = $key.' : '.$value;
+		}
+		$text = implode($text , "\n");		
+	}
+	print $text."\n";
+}
 if ( true || !file_exists($root.'/configuration.php') ) 
 {
-	exec("cp -r $anahita/code/vendors/joomla/* $root");
+	pl();	
+	pl("copying files....");
+	exec("cp -rf $anahita/code/vendors/joomla/* $root");
+	pl("symlinking files....");	
 	exec("php $anahita/scripts/symlink.php $root"); 
 	error_reporting(E_ALL);
 	ini_set("display_errors", 1);
@@ -32,7 +45,8 @@ if ( true || !file_exists($root.'/configuration.php') )
 	jimport( 'joomla.language.language');
 	jimport( 'joomla.utilities.string' );
 	extract($_GET);  
-	$host = getenv('OPENSHIFT_MYSQL_DB_HOST').':'.getenv('OPENSHIFT_MYSQL_DB_PORT');
+	$host = getenv('OPENSHIFT_MYSQL_DB_HOST');
+	$port = getenv('OPENSHIFT_MYSQL_DB_PORT');
 	$user = getenv('OPENSHIFT_MYSQL_DB_USERNAME');
 	$password = getenv('OPENSHIFT_MYSQL_DB_PASSWORD');
 	$database	 = getenv('OPENSHIFT_APP_NAME').'_production';
@@ -40,7 +54,21 @@ if ( true || !file_exists($root.'/configuration.php') )
 	$errors		 = array();
 	$sql_files   = array("$root/installation/sql/mysql/schema.sql","$root/installation/sql/mysql/install.sql");	
 	include_once ("$root/installation/installer/helper.php");
+	pl("connect to database");
+	pl(array(	
+		'host' => $host,
+		'username' => $user,
+		'password' => $password,
+		'database' => $database
+	));
 	$db = JInstallationHelper::getDBO('mysqli',$host,$user,$password,$database,$prefix,false);
+	if ( $db instanceof JException ) 
+	{
+		pl("****************************************************");	
+		pl($db->toString());
+		pl("****************************************************");	
+		exit(1);
+	} 
 	if ( $db->select($database) ) {
 		JInstallationHelper::deleteDatabase($db, $database, $prefix, $errors);		
 	} 	
