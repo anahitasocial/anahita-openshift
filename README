@@ -1,4 +1,36 @@
-Feel free to change or remove this file, it is informational only.
+Read First - Known Issue
+============
+The openshift PHP cartirage enales the xdebug with maximum call stack of 100. This casues a crash in Anahita since in some places the call stack can grow more than 100.
+
+Unfortunately openshift does not provide a way to disable xdebug so we are working on to see if Zend server cartirage can be used instead.
+
+Install
+============
+Create an openshift App
+
+```
+rhc app create -a anahita -t php-5.3
+```
+
+Add MySQL service
+
+```
+rhc cartridge add -a anahita -c mysql-5.1
+```
+
+Add this upstream Anahita repo
+
+```
+cd anahita
+git remote add upstream -m master git://github.com/anahitasocial/anahita-openshift.git
+git pull -s recursive -X theirs upstream master
+```
+
+Then push the repo upstream
+
+```
+git push
+```
 
 Repo layout
 ===========
@@ -25,7 +57,6 @@ persist between pushes of your repo.
 
 Environment Variables
 =====================
-
 OpenShift provides several environment variables to reference for ease
 of use.  The following list are some common variables but far from exhaustive:
 
@@ -44,13 +75,4 @@ variables for username, host and password:
 To get a full list of environment variables, simply add a line in your
 .openshift/action_hooks/build script that says "export" and push.
 
-deplist.txt
-===========
 
-A list of pears to install, line by line on the server.  This will happen when
-the user git pushes.
-
-
-Additional information
-======================
-To access the Zend Management console go to http://app-domain.rhcloud.com/ZendServer
