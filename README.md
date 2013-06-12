@@ -1,9 +1,3 @@
-Read First - Known Issue
-============
-The openshift PHP cartirage enales the xdebug with maximum call stack of 100. This casues a crash in Anahita since in some places the call stack can grow more than 100.
-
-Unfortunately openshift does not provide a way to disable xdebug so we are working on to see if Zend server cartirage can be used instead.
-
 Install
 ============
 Create an openshift App
