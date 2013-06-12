@@ -77,8 +77,10 @@ if ( true || !file_exists($root.'/configuration.php') )
 	array_walk($sql_files, function($file) use($db) {
 		JInstallationHelper::populateDatabase(&$db, $file, $errors);
 	});
-	while(!($admin_email = readline('Enter your email : ')));
-	while(!($admin_pass  = readline('Enter a password : ')));	
+	//while(!($admin_email = readline('Enter your email : ')));
+	//while(!($admin_pass  = readline('Enter a password : ')));	
+	$admin_email = 'admin@example.com';
+	$admin_pass  = 'j87op$oi89';
 	date_default_timezone_set('GMT');
 	$vars = array(
 		'DBhostname' => $host,
