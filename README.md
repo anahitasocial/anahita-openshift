@@ -23,7 +23,7 @@ Add this upstream Anahita repo
 ```
 cd anahita
 git remote add upstream -m master git://github.com/anahitasocial/anahita-openshift.git
-git pull -s recursive -X theirs upstream master
+git pull -s recursive -Xtheirs --no-edid upstream master
 ```
 
 Then push the repo upstream
