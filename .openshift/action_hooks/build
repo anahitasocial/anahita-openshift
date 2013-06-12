@@ -8,6 +8,19 @@
 
 $_GET['root']    = $root    = getenv('OPENSHIFT_REPO_DIR').'/php';
 $_GET['anahita'] = $anahita = getenv('OPENSHIFT_REPO_DIR').'/anahita';
+
+//patch php.ini
+$php_ini = getenv('OPENSHIFT_PRIMARY_CARTRIDGE_DIR').'/configuration/etc/php.ini';
+if ( file_exists($php_ini) )
+{
+	$content= file_get_contents($php_ini);
+	if ( strpos($content,'xdebug.remote_autostart') === false ) {
+		$content .= "xdebug.remote_autostart=0\nxdebug.remote_enable=0\nxdebug.max_nesting_level=500";
+		file_put_contents($php_ini, $content);
+	}
+}
+
+
 function pl($text="")
 {
 	if ( is_array($text) ) 
@@ -19,7 +32,7 @@ function pl($text="")
 	}
 	print $text."\n";
 }
-if ( true || !file_exists($root.'/configuration.php') ) 
+if ( !file_exists($root.'/configuration.php') ) 
 {
 	pl();	
 	pl("copying files....");
