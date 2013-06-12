@@ -1,7 +1,4 @@
 #!/usr/bin/php
-# This is a simple post deploy hook executed after your application 
-# is deployed and started.  This script gets executed directly, so 
-# it could be python, php, ruby, etc.
 
 <?php
 
@@ -24,6 +21,7 @@ if ( !file_exists($root.'/configuration.php') )
 	pl();	
 	pl("copying files....");
 	@exec("cp -rf $anahita/code/vendors/joomla/* $root");
+	@exec("mv $root/htaccess.txt $root/.htaccess");
 	pl("symlinking files....");	
 	exec("php $anahita/scripts/symlink.php $root"); 
 	error_reporting(E_ALL);
@@ -197,8 +195,8 @@ class JConfig {
 	var \$MetaAuthor = '1';
 
 	/* SEO Settings */
-	var \$sef = '0';
-	var \$sef_rewrite = '0';
+	var \$sef = '1';
+	var \$sef_rewrite = '1';
 	var \$sef_suffix = '';
 
 	/* Feed Settings */
