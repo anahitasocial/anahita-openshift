@@ -1,6 +1,0 @@
-[submodule "anahita"]
-	path = anahita
-	url = git://github.com/anahitasocial/anahita.git
-[submodule "anahita-core"]
-	path = anahita-core
-	url = https://github.com/anahitasocial/anahita-legacy.git
