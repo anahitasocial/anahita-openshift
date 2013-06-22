@@ -1,0 +1,93 @@
+Index: nooku_trunk/code/libraries/koowa/mixin/behavior.php
+===================================================================
+--- nooku_trunk/code/libraries/koowa/mixin/behavior.php	(revision 4629)
++++ nooku_trunk/code/libraries/koowa/mixin/behavior.php	(working copy)
+@@ -44,6 +44,9 @@
+ 		//Set the auto mixin state
+ 		$this->_auto_mixin = $config->auto_mixin;
+ 		
++		if ( $config->mixer instanceof KObject )
++		    $config->mixer->mixin($this);
++		
+ 	    //Add the behaviors
+         if(!empty($config->behaviors)) 
+         {
+@@ -100,7 +103,7 @@
+     public function addBehavior($behavior, $config = array())
+     {  
+         if (!($behavior instanceof KBehaviorInterface)) { 
+-           $behavior = $this->getBehavior($behavior, $config);
++           $behavior = $this->_mixer->getBehavior($behavior, $config);
+         }
+                 
+         //Add the behaviors
+@@ -127,6 +130,7 @@
+      */
+     public function getBehavior($behavior, $config = array())
+     {
++       $identifier = $behavior;        
+        if(!($behavior instanceof KServiceIdentifier))
+        {
+             //Create the complete identifier if a partial identifier was passed
+Index: nooku_trunk/code/plugins/koowa/default.php
+===================================================================
+--- nooku_trunk/code/plugins/koowa/default.php	(revision 4629)
++++ nooku_trunk/code/plugins/koowa/default.php	(working copy)
+@@ -103,6 +103,10 @@
+         foreach($config->event_publishers as $publisher) {
+             KService::setConfig($publisher, array('event_subscribers' => array($this)));
+         }
++        
++        if ( $dispatcher instanceof KEventDispatcher ) {
++            $dispatcher->addEventSubscriber($this);
++        }
+ 	}
+ 	
+ 	/**
+Index: nooku_trunk/code/libraries/koowa/command/event.php
+===================================================================
+--- nooku_trunk/code/libraries/koowa/command/event.php	(revision 4629)
++++ nooku_trunk/code/libraries/koowa/command/event.php	(working copy)
+@@ -77,10 +77,10 @@
+         
+         if($context->caller)
+         {   
+-            $identifier = clone $context->caller->getIdentifier();
++            $identifier = $context->caller->getIdentifier();
+             
+             if($identifier->path) {
+-                $type = array_shift($identifier->path);
++                $type = KInflector::implode($identifier->path);                
+             } else {
+                 $type = $identifier->name;
+             }
+Index: nooku_trunk/code/libraries/koowa/mixin/toolbar.php
+===================================================================
+--- nooku_trunk/code/libraries/koowa/mixin/toolbar.php	(revision 4629)
++++ nooku_trunk/code/libraries/koowa/mixin/toolbar.php	(working copy)
+@@ -37,6 +37,8 @@
+ 	    //Add the toolbars
+         if(!empty($config->toolbars)) 
+         {
++            $this->_mixer->mixin($this);
++            
+             $toolbars = (array) KConfig::unbox($config->toolbars);
+             
+             foreach($toolbars as $key => $value) 
+@@ -88,7 +90,7 @@
+     public function addToolbar($toolbar, $config = array(), $priority = KEvent::PRIORITY_NORMAL)
+     { 
+         if (!($toolbar instanceof KControllerToolbarInterface)) { 
+-            $toolbar = $this->getToolbar($toolbar, $config);
++            $toolbar = $this->_mixer->getToolbar($toolbar, $config);
+         }
+ 		       
+         //Add the toolbars
+@@ -109,6 +111,7 @@
+      */
+     public function getToolbar($toolbar, $config = array())
+     {
++       $identifier = $toolbar;
+        if(!($toolbar instanceof KServiceIdentifier))
+        {
+             //Create the complete identifier if a partial identifier was passed
